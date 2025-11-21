@@ -1,42 +1,28 @@
-import random
+    def generate(self, max_words=30):
+        # If not fitted or no data, return empty string (tests expect this)
+        if not self.fitted:
+            return ""
 
-class TrigramModel:
-    def __init__(self):
-        """
-        Initializes the TrigramModel.
-        """
-        # TODO: Initialize any data structures you need to store the n-gram counts.
-       
-        pass
+        # If vocabulary is too small (less than 3 words), return what we can
+        if len(self.vocab) < 3 or not self.trigrams:
+            # join vocab items into a simple string
+            return " ".join(list(self.vocab))
 
-    def fit(self, text):
-        """
-        Trains the trigram model on the given text.
+        # Pick a random bigram
+        bigrams = list(self.trigrams.keys())
+        if not bigrams:
+            return ""
 
-        Args:
-            text (str): The text to train the model on.
-        """
-        # TODO: Implement the training logic.
-        # This will involve:
-        # 1. Cleaning the text (e.g., converting to lowercase, removing punctuation).
-        # 2. Tokenizing the text into words.
-        # 3. Padding the text with start and end tokens.
-        # 4. Counting the trigrams.
-        pass
+        w1, w2 = random.choice(bigrams)
+        generated = [w1, w2]
 
-    def generate(self, max_length=50):
-        """
-        Generates new text using the trained trigram model.
+        # Generate more words
+        for _ in range(max_words - 2):
+            next_word = self._sample_next((w1, w2))
+            if not next_word:
+                break
+            generated.append(next_word)
+            w1, w2 = w2, next_word
 
-        Args:
-            max_length (int): The maximum length of the generated text.
-
-        Returns:
-            str: The generated text.
-        """
-        # TODO: Implement the generation logic.
-        # This will involve:
-        # 1. Starting with the start tokens.
-        # 2. Probabilistically choosing the next word based on the current context.
-        # 3. Repeating until the end token is generated or the maximum length is reached.
-        pass
+        # Return as string
+        return " ".join(generated)
