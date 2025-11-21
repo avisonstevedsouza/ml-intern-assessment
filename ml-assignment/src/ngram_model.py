@@ -1,42 +1,78 @@
 import random
+import re
+from collections import defaultdict
+
 
 class TrigramModel:
     def __init__(self):
-        """
-        Initializes the TrigramModel.
-        """
-        # TODO: Initialize any data structures you need to store the n-gram counts.
-       
-        pass
+        # store trigram counts as:
+        # (w1, w2) → {w3: count}
+        self.trigrams = defaultdict(lambda: defaultdict(int))
+        self.vocabulary = set()
+        self.fitted = False
 
-    def fit(self, text):
-        """
-        Trains the trigram model on the given text.
+    def _clean_text(self, text):
+        # Lowercase + keep only words
+        text = text.lower()
+        words = re.findall(r"\b\w+\b", text)
+        return words
 
-        Args:
-            text (str): The text to train the model on.
-        """
-        # TODO: Implement the training logic.
-        # This will involve:
-        # 1. Cleaning the text (e.g., converting to lowercase, removing punctuation).
-        # 2. Tokenizing the text into words.
-        # 3. Padding the text with start and end tokens.
-        # 4. Counting the trigrams.
-        pass
+    def fit(self, text: str):
+        if not text:
+            self.fitted = False
+            return
 
-    def generate(self, max_length=50):
-        """
-        Generates new text using the trained trigram model.
+        words = self._clean_text(text)
 
-        Args:
-            max_length (int): The maximum length of the generated text.
+        if len(words) < 3:
+            # Not enough to build trigrams
+            self.vocabulary = set(words)
+            self.fitted = True
+            return
 
-        Returns:
-            str: The generated text.
-        """
-        # TODO: Implement the generation logic.
-        # This will involve:
-        # 1. Starting with the start tokens.
-        # 2. Probabilistically choosing the next word based on the current context.
-        # 3. Repeating until the end token is generated or the maximum length is reached.
-        pass
+        self.vocabulary = set(words)
+
+        # Build trigram counts
+        for i in range(len(words) - 2):
+            w1, w2, w3 = words[i], words[i + 1], words[i + 2]
+            self.trigrams[(w1, w2)][w3] += 1
+
+        self.fitted = True
+
+    def _sample_next_word(self, bigram):
+        """Sample next word using trigram probabilities."""
+        next_words = self.trigrams.get(bigram, None)
+
+        if not next_words:
+            return None
+
+        # Weighted probabilistic sampling
+        words = list(next_words.keys())
+        counts = list(next_words.values())
+        total = sum(counts)
+        probs = [c / total for c in counts]
+
+        return random.choices(words, probs)[0]
+
+    def generate(self, max_words=30):
+        if not self.fitted:
+            return ""
+
+        if len(self.vocabulary) < 3 or not self.trigrams:
+            # Not enough data; return whatever text is possible
+            return " ".join(list(self.vocabulary))
+
+        # Start from a random bigram
+        bigram = random.choice(list(self.trigrams.keys()))
+        w1, w2 = bigram
+        generated = [w1, w2]
+
+        # Generate iteratively
+        for _ in range(max_words - 2):
+            w3 = self._sample_next_word((w1, w2))
+            if not w3:
+                break
+            generated.append(w3)
+            w1, w2 = w2, w3
+
+        return " ".join(generated)
