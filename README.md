@@ -1,23 +1,16 @@
-#AI/ML Intern Assignment
+# Trigram Language Model — ML Intern Assignment
 
-Welcome to the AI/ML Intern assignment! This project is designed to test your core Python skills and your ability to design and build a clean and efficient system from scratch.
+## Overview
+This project implements a simple trigram (N = 3) language model from scratch (Task 1).  
+Task 2 (optional) implements Scaled Dot-Product Attention using only `numpy`.
 
-## Quick Start
+## Requirements
+- Python 3.8+
+- `pytest` (for tests)
+- `numpy` (for Task 2 demo)
 
-1. Clone or fork this repository.
-2. Install the required dependencies: `pip install -r requirements.txt`
-3. Open the trigram-assignment/src/ngram_model.py file and implement the TrigramModel class.
-4. Run the tests to check your implementation: `pytest trigram-assignment/tests/test_ngram.py`
+Install requirements:
 
-
-## Instructions
-
-1. Any changes to env should be updated in `requirements.txt`.
-2. Mention the steps to run your code in `trigram-assignment/README.md`.
-3. Feel free to make any changes to the existing code.
-4. Please document your design choices in the `evaluation.md` file. This should be a 1-page summary of the decisions you made and why you made them. And all the steps to for us to test.
-5. Please mind the second task is optional.
-
-
-
-For more detailed instructions, please refer to the `ASSIGNMENT.md` file.
+```powershell
+# from inside the ml-assignment folder
+python -m pip install -r requirements.txt
